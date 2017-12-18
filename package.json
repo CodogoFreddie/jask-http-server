@@ -1,0 +1,47 @@
+{
+	"name": "jask-http-server",
+	"version": "1.0.0",
+	"main": "index.js",
+	"repository": "git@github.com:CodogoFreddie/jask-http-server.git",
+	"author": "Freddie Ridell <freddie@codogo.io>",
+	"bin": {
+		"jask-server": "server.js"
+	},
+	"eslintConfig": {
+		"extends": "codogo"
+	},
+	"babel": {
+		"presets": [
+			"env"
+		],
+		"plugins": [
+			"source-map-support",
+			"preval",
+			[
+				"transform-object-rest-spread",
+				{
+					"useBuiltIns": true
+				}
+			]
+		]
+	},
+	"scripts": {
+		"build": "NODE_ENV=production babel src --out-dir lib",
+		"format": "react-scripts format",
+		"precommit": "yarn format && git add -u && yarn build",
+		"watch": "NODE_ENV=production babel --source-maps inline --watch src --out-dir lib"
+	},
+	"license": "MIT",
+	"dependencies": {
+		"babel-cli": "^6.26.0",
+		"babel-plugin-source-map-support": "^1.0.0",
+		"ramda": "^0.25.0"
+	},
+	"devDependencies": {
+		"babel-plugin-node-source-map-support": "^0.0.1",
+		"babel-plugin-preval": "^1.6.2",
+		"babel-preset-codogo": "^2.0.1",
+		"babel-preset-env": "^1.6.1",
+		"codogo-react-scripts": "^1.0.14-delta.84"
+	}
+}
