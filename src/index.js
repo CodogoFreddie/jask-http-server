@@ -1,5 +1,4 @@
 import http from "http";
-import fs from "fs";
 import jsonfile from "jsonfile";
 import recursive from "recursive-readdir";
 import R from "ramda";
