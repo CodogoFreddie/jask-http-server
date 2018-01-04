@@ -29,12 +29,16 @@
 		"build": "NODE_ENV=production babel src --out-dir lib",
 		"format": "react-scripts format",
 		"precommit": "yarn format && git add -u && yarn build",
+		"install-server": "NODE_ENV=production babel src --out-dir lib && forever-service install jask-server --start --script server.js --runAsUser $USER",
+		"uninstall-server": "forever-service delete jask-server",
 		"watch": "NODE_ENV=production babel --source-maps inline --watch src --out-dir lib"
 	},
 	"license": "MIT",
 	"dependencies": {
 		"babel-cli": "^6.26.0",
 		"babel-plugin-source-map-support": "^1.0.0",
+		"forever": "^0.15.3",
+		"forever-service": "^0.5.11",
 		"ramda": "^0.25.0"
 	},
 	"devDependencies": {
