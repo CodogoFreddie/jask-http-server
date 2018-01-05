@@ -37,6 +37,8 @@
 	"dependencies": {
 		"babel-cli": "^6.26.0",
 		"babel-plugin-source-map-support": "^1.0.0",
+		"cors": "^2.8.4",
+		"express": "^4.16.2",
 		"forever": "^0.15.3",
 		"forever-service": "^0.5.11",
 		"ramda": "^0.25.0"

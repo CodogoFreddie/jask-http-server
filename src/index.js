@@ -1,8 +1,8 @@
-import http from "http";
+import express from "express";
+import cors from "cors";
 import jsonfile from "jsonfile";
 import recursive from "recursive-readdir";
 import R from "ramda";
-import url from "url";
 
 import getConfig from "./config";
 
@@ -21,6 +21,7 @@ getConfig().then(config => {
 							R.pipe(R.replace(/.+\//, ""), x => parseInt(x, 10)),
 						),
 						R.map(R.replace(dataFolder + "/", "")),
+						R.map(R.replace("/", "_")),
 					)(files),
 				),
 			)
@@ -28,31 +29,42 @@ getConfig().then(config => {
 
 	const getEvent = path =>
 		new Promise(done =>
-			jsonfile.readFile(dataFolder + path, (err, dat) => done(dat)),
+			jsonfile.readFile(
+				dataFolder + "/" + path.replace("_", "/"),
+				(err, dat) => {
+					console.log({ err, dat, });
+					return done(dat);
+				},
+			),
 		).then(x => JSON.stringify(x));
 
-	const startServer = () => {
-		http
-			.createServer((req, res) => {
-				const parsedUrl = url.parse(req.url);
+	const app = express();
 
-				if (req.headers.authorization !== key) {
-					res.statusCode = 401;
-					return res.end(
-						'{err:401, msg: "not authorised, please provide key"}',
-					);
-				}
+	app.options("/", cors());
+	app.get("/", cors(), (req, res) => {
+		if (req.headers.authorization !== key) {
+			return res
+				.status(401)
+				.send('{err:401, msg: "not authorised, please provide key"}');
+		}
 
-				if (parsedUrl.pathname === "/") {
-					res.setHeader("Content-type", "application/json");
-					getAllEventsIdents().then(data => res.end(data));
-				} else {
-					res.setHeader("Content-type", "application/json");
-					getEvent(parsedUrl.pathname).then(data => res.end(data));
-				}
-			})
-			.listen(port);
+		res.set("Content-type", "application/json");
+		getAllEventsIdents().then(data => res.send(data));
+	});
 
+	app.options("/:key", cors());
+	app.get("/:key", cors(), (req, res) => {
+		if (req.headers.authorization !== key) {
+			return res
+				.status(401)
+				.send('{err:401, msg: "not authorised, please provide key"}');
+		}
+
+		res.set("Content-type", "application/json");
+		getEvent(req.params.key).then(data => res.end(data));
+	});
+
+	app.listen(port, () => {
 		console.log(`
 Server started
 ==============
@@ -60,7 +72,5 @@ Server started
 	+ serving from ${dataFolder}
 	+ with auth key: "${key}"
 `);
-	};
-
-	startServer();
+	});
 });
